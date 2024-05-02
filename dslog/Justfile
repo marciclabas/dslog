@@ -6,6 +6,7 @@ default:
 
 # Build the package (into `dist/`)
 build:
+  cp ../README.md .
   rm -drf dist
   {{PYTHON}} -m build
   rm -drf build
