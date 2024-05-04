@@ -1,3 +1,4 @@
+mod dslog
 
 VENV := ".venv"
 PYTHON := ".venv/bin/python"

@@ -15,5 +15,5 @@ logger('Oops!', { 'more': 'details' }, level='WARNING')
 # [WARNING] Oops! { 'more', 'details' }     ([WARNING] in green)
 ```
 """
-from .types import Level
+from .types import Level, LEVELS
 from .logger import Logger, LogFn

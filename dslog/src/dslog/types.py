@@ -1,7 +1,8 @@
-from typing import Protocol, Literal, Iterable
+from typing import Protocol, Literal, Iterable, Sequence
 
 Level = Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-LEVELS: dict[Level, int] = {
+LEVELS: Sequence[Level] = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+LEVEL_VALUES: dict[Level, int] = {
     'DEBUG': 10,
     'INFO': 20,
     'WARNING': 30,
@@ -10,7 +11,7 @@ LEVELS: dict[Level, int] = {
 }
 
 def value(level: Level | int) -> int:
-  return level if isinstance(level, int) else LEVELS[level]
+  return level if isinstance(level, int) else LEVEL_VALUES[level]
 
 class Handler(Protocol):
   """Just prints out shit"""
