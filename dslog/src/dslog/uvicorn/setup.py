@@ -20,7 +20,7 @@ def setup_loggers(**loggers: Unpack[UvicornLoggers]):
   """
   access = loggers.get('access') or Logger.click().format(ACCESS_FORMATTER)
   uvicorn = loggers.get('uvicorn') or Logger.click().format(DEFAULT_FORMATTER)
-  error = loggers.get('error') or Logger.rich().prefix('ERROR')
+  error = loggers.get('error') or Logger.empty()
   logging.getLogger('uvicorn.access').handlers = [StdHandler(access)]
   logging.getLogger('uvicorn').handlers = [StdHandler(uvicorn)]
   logging.getLogger('uvicorn.error').handlers = [StdHandler(error)]
