@@ -15,6 +15,7 @@ build:
 publish:
   {{PYTHON}} -m twine upload dist/*
   rm -drf dist
+  rm README.md
 
 # Increase patch version
 patch:

@@ -1,6 +1,9 @@
+from typing import TypeVarTuple
 from dslog.types import Level
 
-def default_formatter(*objs, level: Level):
+Objs = TypeVarTuple('Objs')
+
+def default(*objs: *Objs, level: Level) -> tuple[str, *Objs]:
   return (f'[{level}]', *objs)
 
 def level_color(level: Level):
@@ -11,6 +14,11 @@ def level_color(level: Level):
     case 'ERROR': return 'red'
     case 'CRITICAL': return 'bold red'
 
-def rich_formatter(*objs, level: Level):
+def click(*objs: *Objs, level: Level) -> tuple[str, *Objs]:
+  import click
   col = level_color(level)
-  return (f'[{col}][{level}][/{col}]', *objs)
+  return click.style(f'[{level}]', fg=col), *objs
+
+def rich(*objs: *Objs, level: Level) -> tuple[str, *Objs]:
+  col = level_color(level)
+  return f'[{col}][{level}][/{col}]', *objs

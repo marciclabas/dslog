@@ -1,1 +1,0 @@
-from .uvicorn import uvicorn_logconfig

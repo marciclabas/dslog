@@ -1,17 +1,18 @@
-from email.policy import default
-from typing import Literal, Protocol
+from typing import Literal, Protocol, Generic, TypeVarTuple
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from .types import Level, Handler, Formatter, value
 from . import loggers, formatters
 
-class LogFn(Protocol):
-  def __call__(self, *objs, level: Level = 'INFO'):
+Objs = TypeVarTuple('Objs')
+
+class LogFn(Protocol, Generic[*Objs]):
+  def __call__(self, *objs: *Objs, level: Level = 'INFO'):
     ...
 
-class Logger(ABC, LogFn):
+class Logger(ABC, LogFn[*Objs], Generic[*Objs]):
   @abstractmethod
-  def __call__(self, *objs, level: Level = 'INFO'):
+  def __call__(self, *objs: *Objs, level: Level = 'INFO'):
     ...
 
   @classmethod
@@ -19,31 +20,36 @@ class Logger(ABC, LogFn):
     return LoggerOf(handler)
 
   @classmethod
-  def rich(cls) -> 'Logger':
+  def click(cls) -> 'Logger[*Objs]':
+    """`print` logger formatted with `click`"""
+    return Logger.of(print).format(formatters.click) 
+
+  @classmethod
+  def rich(cls) -> 'Logger[*Objs]':
     """Nicely formatted rich logger (use `loggers.rich` aka `Logger.of(rich.print)` for a non-formatted version)"""
-    return loggers.rich().format(formatters.rich_formatter)
+    return loggers.rich().format(formatters.rich) 
   
   @classmethod
-  def file(cls, filepath: str, *, mode: Literal['w', 'a'] = 'a') -> 'Logger':
+  def file(cls, filepath: str, *, mode: Literal['w', 'a'] = 'a') -> 'Logger[*Objs]':
     """Default formatted file logger (use `loggers.file` for a non-formatted version)"""
-    return loggers.file(filepath, mode=mode).format(formatters.default_formatter)
+    return loggers.file(filepath, mode=mode).format(formatters.default)
   
   @classmethod
-  def empty(cls) -> 'Logger':
-    """A logger that doesn't do anything"""
+  def empty(cls) -> 'Logger[*Objs]':
+    """*Objs logger that doesn't do anything"""
     return LoggerOf(lambda *_, **_kw: None)
 
   def limit(self, min_level: Level) -> 'Logger':
     return Limited(min_level, self)
   
-  def format(self, format: Formatter) -> 'Logger':
+  def format(self, format: Formatter[*Objs]) -> 'Logger[*Objs]':
     return Formatted(format, self)
   
-  def prefix(self, prefix: str) -> 'Logger':
-    return self.format(lambda *objs, **_: (prefix, *objs))
+  def prefix(self, prefix: str) -> 'Logger[*Objs]':
+    return self.format(lambda *objs, **_: (prefix, *objs)) # type: ignore
   
-  def postfix(self, postfix: str) -> 'Logger':
-    return self.format(lambda *objs, **_: (*objs, postfix))
+  def postfix(self, postfix: str) -> 'Logger[*Objs]':
+    return self.format(lambda *objs, **_: (*objs, postfix)) # type: ignore
   
 @dataclass
 class LoggerOf(Logger):
@@ -61,8 +67,8 @@ class Limited(Logger):
       self.logger(*objs, level=level)
 
 @dataclass
-class Formatted(Logger):
-  formatter: Formatter
+class Formatted(Logger[*Objs]):
+  formatter: Formatter[*Objs]
   logger: Logger
 
   def __call__(self, *objs, level: Level = 'INFO'):

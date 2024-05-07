@@ -1,3 +1,3 @@
-from .formatters import default_formatter, rich_formatter
+from .formatters import default, rich, click
 
-__all__ = ['default_formatter', 'rich_formatter']
+__all__ = ['default', 'rich', 'click']
