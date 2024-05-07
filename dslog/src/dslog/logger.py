@@ -20,12 +20,12 @@ class Logger(ABC, LogFn[*Objs], Generic[*Objs]):
     return LoggerOf(handler)
 
   @classmethod
-  def click(cls) -> 'Logger[*Objs]':
+  def click(cls) -> 'Logger':
     """`print` logger formatted with `click`"""
     return Logger.of(print).format(formatters.click) 
 
   @classmethod
-  def rich(cls) -> 'Logger[*Objs]':
+  def rich(cls) -> 'Logger':
     """Nicely formatted rich logger (use `loggers.rich` aka `Logger.of(rich.print)` for a non-formatted version)"""
     return loggers.rich().format(formatters.rich) 
   
@@ -35,7 +35,7 @@ class Logger(ABC, LogFn[*Objs], Generic[*Objs]):
     return loggers.file(filepath, mode=mode).format(formatters.default)
   
   @classmethod
-  def empty(cls) -> 'Logger[*Objs]':
+  def empty(cls) -> 'Logger':
     """*Objs logger that doesn't do anything"""
     return LoggerOf(lambda *_, **_kw: None)
 
