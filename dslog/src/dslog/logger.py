@@ -33,6 +33,11 @@ class Logger(ABC, LogFn[*Objs], Generic[*Objs]):
   def file(cls, filepath: str, *, mode: Literal['w', 'a'] = 'a') -> 'Logger[*Objs]':
     """Default formatted file logger (use `loggers.file` for a non-formatted version)"""
     return loggers.file(filepath, mode=mode).format(formatters.default)
+
+  @classmethod
+  def stderr(cls) -> 'Logger':
+    import sys
+    return Logger.of(lambda *objs: print(*objs, file=sys.stderr))
   
   @classmethod
   def empty(cls) -> 'Logger':
