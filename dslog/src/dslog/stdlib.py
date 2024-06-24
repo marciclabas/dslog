@@ -1,5 +1,5 @@
 import logging
-from .logger import Logger, Formatter
+from .logger import Logger, Formatter, Handler, Level, value
 
 class StdHandler(logging.Handler):
   """A `logging.Handler` from a `dslog.Logger`"""
@@ -9,6 +9,11 @@ class StdHandler(logging.Handler):
 
   def emit(self, record):
     self.logger(record, level=record.levelname) # type: ignore (level)
+
+def handler(logger: logging.Logger) -> Handler:
+  def bound(*logs, level: Level):
+    logger.log(value(level), *logs)
+  return bound
 
 class StdFormatter(Formatter[logging.LogRecord]):
 

@@ -1,5 +1,5 @@
 from typing import Literal
-from ..types import Handler
+from ..types import Handler, Level
 from ..logger import Logger
 
 class FileHandler(Handler):
@@ -10,7 +10,7 @@ class FileHandler(Handler):
       with open(filepath, 'w'):
         ...
 
-  def __call__(self, *objs):
+  def __call__(self, *objs, level: Level = 'INFO'):
     with open(self.filepath, 'a') as f:
       print(*objs, file=f)
 

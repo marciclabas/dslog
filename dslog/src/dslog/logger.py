@@ -1,4 +1,6 @@
-from typing import Literal, Protocol, Generic, TypeVarTuple
+from typing import Literal, Protocol, Generic, TypeVarTuple, TYPE_CHECKING
+if TYPE_CHECKING:
+  import logging
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from .types import Level, Handler, Formatter, value
@@ -22,7 +24,7 @@ class Logger(ABC, LogFn[*Objs], Generic[*Objs]):
   @classmethod
   def click(cls) -> 'Logger':
     """`print` logger formatted with `click`"""
-    return Logger.of(print).format(formatters.click) 
+    return Logger.of(lambda *objs, **_: print(*objs)).format(formatters.click) 
 
   @classmethod
   def rich(cls) -> 'Logger':
@@ -37,7 +39,14 @@ class Logger(ABC, LogFn[*Objs], Generic[*Objs]):
   @classmethod
   def stderr(cls) -> 'Logger':
     import sys
-    return Logger.of(lambda *objs: print(*objs, file=sys.stderr))
+    return Logger.of(lambda *objs, **_: print(*objs, file=sys.stderr))
+  
+  @classmethod
+  def stdlib(cls, logger: 'logging.Logger | None' = None) -> 'Logger':
+    """Logger from a `logging.Logger`. If not provided, uses `logging.getLogger()`"""
+    import logging
+    from .stdlib import handler
+    return LoggerOf(handler(logger or logging.getLogger()))
   
   @classmethod
   def empty(cls) -> 'Logger':
@@ -59,8 +68,8 @@ class Logger(ABC, LogFn[*Objs], Generic[*Objs]):
 @dataclass
 class LoggerOf(Logger):
   handler: Handler
-  def __call__(self, *objs, **_):
-    self.handler(*objs)
+  def __call__(self, *objs, level: Level = 'INFO'):
+    self.handler(*objs, level=level)
 
 @dataclass
 class Limited(Logger):
