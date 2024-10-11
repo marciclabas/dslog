@@ -34,7 +34,7 @@ class Logger(ABC, LogFn[*Objs], Generic[*Objs]):
   @classmethod
   def file(cls, filepath: str, *, mode: Literal['w', 'a'] = 'a') -> 'Logger[*Objs]':
     """Default formatted file logger (use `loggers.file` for a non-formatted version)"""
-    return loggers.file(filepath, mode=mode).format(formatters.default)
+    return loggers.file(filepath, mode=mode).format(formatters.default) # type: ignore
 
   @classmethod
   def stderr(cls) -> 'Logger':

@@ -12,7 +12,7 @@ class StdHandler(logging.Handler):
 
 def handler(logger: logging.Logger) -> Handler:
   def bound(*logs, level: Level):
-    logger.log(value(level), *logs)
+    logger.log(value(level), ', '.join(map(str, logs)))
   return bound
 
 class StdFormatter(Formatter[logging.LogRecord]):
